@@ -1,0 +1,37 @@
+const redis = require('redis');
+
+const client = redis.createClient({
+    host: 'clustercfg.latam-cache-dev-redis-cluster.qnygir.sae1.cache.amazonaws.com',
+    port: 6379,
+    password: 'OS9l3czyb23YS2yoNt6Yq6eQmamLjGFEbc5SxqlBoNFTjCQY7nARs4wVEgaAm36gSmxp97rpUM331hpFzuN7zIFtABcAuxbOsKEV4igkNm21yrw6iTUFOpewQi5EYsSO',
+    //auth_pass: 'thePassword', 
+    tls: { checkServerIdentity: () => undefined }
+});
+
+exports.handler = async () => {
+    await storeValue('sampleKey', 'sampleValue');
+    const value = await getValue('sampleKey');
+    return value;
+}
+
+const getValue = key => {
+    return new Promise((resolve, reject) => {
+        client.get(key, (error, response) => {
+            if (error)
+                reject(error);
+            else
+                resolve(response);
+        });
+    });
+}
+
+const storeValue = (key, value) => {
+    return new Promise((resolve, reject) => {
+        client.set(key, value, (error, response) => {
+            if (error)
+                reject(error);
+            else
+                resolve(response);
+        });
+    });
+}
