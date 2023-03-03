@@ -1,0 +1,24 @@
+var Redis = require("ioredis");
+
+if (typeof client === 'undefined') {
+          var client = new Redis({
+                host: 'my-cluster.amazonaws.com',
+                lazyConnect: false,
+                port: 6379,
+                tls: { checkServerIdentity: () => undefined },
+                // AWS Secrets Manager - latam-cache-dev-sm-redis-password
+                password: '123456789',
+                connectTimeout: 10000,
+          });
+}
+exports.handler = async (event) => {
+          await client.set("foo", "bar");
+          let result = await client.get("foo");
+          let response = {
+                      'statusCode': 200,
+                      'body': JSON.stringify({
+                                    result: result,
+                                  })
+                    };
+          return response;
+};
